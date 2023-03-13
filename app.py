@@ -5,13 +5,14 @@ import yaml
 from flask import Flask, redirect, render_template, request, session
 from wtforms import Form, StringField, validators
 
-hw_configs = yaml.full_load(open('configs/hw.yml').read())
+FILE_DIR = '.'
+hw_configs = yaml.full_load(open(f'{FILE_DIR}/configs/hw.yml').read())
 
 app = Flask(__name__)
 app.secret_key = hw_configs['secret_key']
 app.config['SESSION_TYPE'] = 'filesystem'
 
-DB_NAME = hw_configs['DB_NAME']
+DB_NAME = f"{FILE_DIR}/hw_configs['DB_NAME']"
 TABLE_NAME = hw_configs['TABLE_NAME']
 CURRENT_HW = hw_configs['CURRENT_HW']
 
@@ -124,6 +125,8 @@ def index():
                         # Check if new answer is correct
                         if answer_new == answer_correct:
                             is_correct = 1
+                        else:
+                            is_correct = 0
 
                         print(qnum, num_attempts, answer_new, answer_correct, is_correct)
 
