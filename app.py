@@ -1,3 +1,4 @@
+import csv
 import sqlite3
 
 import pandas as pd
@@ -15,6 +16,61 @@ app.config['SESSION_TYPE'] = 'filesystem'
 DB_NAME = f"{FILE_DIR}/hw_configs['DB_NAME']"
 TABLE_NAME = hw_configs['TABLE_NAME']
 CURRENT_HW = hw_configs['CURRENT_HW']
+HW_CSV_FILE = hw_configs['HW_CSV_FILE']
+
+
+def create_hw():
+    conn = sqlite3.connect(DB_NAME)
+
+    delete_query = f"""
+            DROP TABLE IF EXISTS "{TABLE_NAME}";
+            """
+    query = f"""
+            CREATE TABLE IF NOT EXISTS "{TABLE_NAME}" (
+              id TEXT PRIMARY KEY,
+              homework_name TEXT,
+              student_name TEXT,
+              question_number INTEGER,
+              question_text TEXT,
+              question_image_url TEXT,
+              answer_options TEXT,
+              correct_answer TEXT,
+              answer_type TEXT,
+              hint_1 TEXT,
+              hint_2 TEXT,
+              student_answer TEXT,
+              num_attempts INTEGER DEFAULT 0,
+              is_correct INTEGER DEFAULT 0
+            );
+            """
+
+    conn.execute(delete_query)
+    conn.execute(query)
+    conn.close()
+
+
+def insert_hw(HW_CSV_FILE):
+    conn = sqlite3.connect(DB_NAME)
+    file = open(f'{FILE_DIR}/{HW_CSV_FILE}')
+
+    # SQL query to insert CSV data into the table
+    contents = csv.reader(file)
+    insert_records = f"""
+                     INSERT INTO {TABLE_NAME}
+                        (id, homework_name, student_name, question_number, question_text, question_image_url, answer_options, correct_answer, answer_type, hint_1, hint_2, student_answer)
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                     """
+
+    # Import the contents of the file
+    conn.executemany(insert_records, contents)
+    conn.commit()
+
+    # Check contents of table
+    select_all = f"SELECT * FROM {TABLE_NAME}"
+    test = pd.read_sql_query(select_all, conn)
+    print(test)
+
+    conn.close()
 
 
 def clean_answer(ans, answer_type):
