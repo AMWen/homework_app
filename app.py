@@ -74,6 +74,7 @@ def insert_hw(HW_CSV_FILE):
 
 
 def clean_answer(ans, answer_type):
+    ans = ans.strip().lower()
     try:
         if answer_type == 'int':
             ans = int(ans)
@@ -128,6 +129,8 @@ def index():
         questions['question_number'] = questions['question_number'].astype(str)  # needs to be str for form
         qbank = questions.set_index('question_number').T.to_dict()
 
+        print(qbank)
+
         class Questions(Form):
             pass
 
@@ -135,13 +138,15 @@ def index():
         # Create a form input for each question; use iterrows instead of qbank to keep questions in numerical order
         for i, row in questions.iterrows():
             qnum = row['question_number']
-            disabled = qbank[qnum]['num_attempts'] == 5 or (qbank[qnum]['is_correct'] == 1)
+            disabled = (qbank[qnum]['num_attempts'] == 5 or (qbank[qnum]['is_correct'] == 1)) and (
+                CURRENT_USER != 'Amy'
+            )
             setattr(
                 Questions,
                 qnum,
                 StringField(
                     qnum,
-                    [validators.Length(max=5)],
+                    [validators.Length(max=7)],
                     default=qbank[qnum]['student_answer'],
                     render_kw={'disabled': disabled},
                 ),
@@ -163,10 +168,10 @@ def index():
                 answer_old = qcurr_old['student_answer']
                 num_attempts = qcurr_old['num_attempts']
                 is_correct = qcurr_old['is_correct']
-                answer_new = qcurr_new[qnum].strip().lower()
+                answer_new = qcurr_new[qnum]
 
                 # If the previous answer was wrong and there is an input
-                if (not is_correct) and answer_new != '':
+                if ((not is_correct) or (CURRENT_USER == 'Amy')) and answer_new != '':
 
                     # Update answer type to match expected
                     answer_correct = clean_answer(answer_correct, answer_type)
