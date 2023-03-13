@@ -2,19 +2,16 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, user-scalable=yes, initial-scale=1, maximum-scale=3, minimum-scale=0.5">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <link rel="icon" href="../static/favicon.ico">
-    <meta name="description" content="">
-    <meta name="author" content="Amy Wen">
-    <title>5th Grade Math HW</title>
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
 </head>
-
 <body>
 
 <form method="POST">
     <!-- Hidden button at top so other buttons are not hit when enter is pressed -->
-    <input type="submit" name="submit_button" value="submit_button" style="display: none" aria-hidden="true" />
+    <div><input type="submit" name="submit_button" value="submit_button" style="visibility: hidden; width: 0; height: 0; overflow: hidden;" /></div>
 
     {% if current_user == "" %}
 
@@ -28,7 +25,7 @@
         <div> Current user: {{current_user}} &emsp; </div>
 
         {% if current_user == "Amy" %}
-        <div><input type="submit" name="submit_button" value="submit_button" style="visibility: hidden; width: 0; height: 0; overflow: hidden;" /></div>
+
         <div><input type="submit" name="reset_button" value="Change" size="36"/></div>
 
         {% endif %}
@@ -55,8 +52,11 @@
             </div>
 
             <div>Attempts: {{ qbank.get(field.label.field_id).num_attempts }}</div>
-            {% if qbank.get(field.label.field_id).num_attempts > 0 and qbank.get(field.label.field_id).hint_1 != '' %}
+            {% if (qbank.get(field.label.field_id).num_attempts > 0) and (qbank.get(field.label.field_id).hint_1 != '') and ((qbank.get(field.label.field_id).is_correct == 0) or (qbank.get(field.label.field_id).num_attempts != 1 and qbank.get(field.label.field_id).is_correct == 1)) %}
                 <div>Hint: {{ qbank.get(field.label.field_id).hint_1 }}</div>
+            {% endif %}
+            {% if qbank.get(field.label.field_id).num_attempts > 1 and qbank.get(field.label.field_id).hint_2 != '' and qbank.get(field.label.field_id).is_correct == 0 %}
+                <div>Hint 2: {{ qbank.get(field.label.field_id).hint_2 }}</div>
             {% endif %}
             <br>
         {% endfor %}
