@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=yes, initial-scale=1, maximum-scale=3, minimum-scale=0.5">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link rel="icon" href="../static/favicon.ico">
+    <meta name="description" content="">
+    <meta name="author" content="Amy Wen">
+    <title>5th Grade Math HW</title>
+</head>
+
+<body>
+
+<form method="POST">
+    <!-- Hidden button at top so other buttons are not hit when enter is pressed -->
+    <input type="submit" name="submit_button" value="submit_button" style="display: none" aria-hidden="true" />
+
+    {% if current_user == "" %}
+
+        <input type="submit" name="button" value="Kai" size="36"/>
+
+        <input type="submit" name="button" value="Victoria" size="36"/>
+
+        <input type="submit" name="button" value="Amy" size="36"/>
+
+    {% else %}
+        <div> Current user: {{current_user}} &emsp; </div>
+
+        {% if current_user == "Amy" %}
+        <div><input type="submit" name="submit_button" value="submit_button" style="visibility: hidden; width: 0; height: 0; overflow: hidden;" /></div>
+        <div><input type="submit" name="reset_button" value="Change" size="36"/></div>
+
+        {% endif %}
+
+        <br>
+
+        {% for field in form %}
+            <div> {{ field.label }}. {{ qbank.get(field.label.field_id).question_text }} </div>
+
+            {% if 'fig' in qbank.get(field.label.field_id).question_image_url %}
+                <div>
+                <img src="https://github.com/AMWen/homework_app/blob/main/figs/{{qbank.get(field.label.field_id).question_image_url}}.jpeg?raw=true", height="200px">
+                </div>
+            {% endif %}
+
+            <div>
+            {% if qbank.get(field.label.field_id).num_attempts == 0 %}
+                {{ field }}
+            {% elif qbank.get(field.label.field_id).is_correct == 1 %}
+                {{ field }} <img src="static/check.png", width="16px">
+            {% else %}
+                {{ field }} <img src="static/x.png", width="16px">
+            {% endif %}
+            </div>
+
+            <div>Attempts: {{ qbank.get(field.label.field_id).num_attempts }}</div>
+            {% if qbank.get(field.label.field_id).num_attempts > 0 and qbank.get(field.label.field_id).hint_1 != '' %}
+                <div>Hint: {{ qbank.get(field.label.field_id).hint_1 }}</div>
+            {% endif %}
+            <br>
+        {% endfor %}
+
+        <input type="submit" name="submit_button" value="Submit" size="36"/>
+
+    {% endif %}
+</form>
+</body>
+</html>

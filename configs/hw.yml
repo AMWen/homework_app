@@ -1,0 +1,4 @@
+DB_NAME: 'questions.db'
+TABLE_NAME: 'questions'
+CURRENT_HW: '0315-triangles'
+secret_key: 'super secret key 3'
