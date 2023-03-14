@@ -1,4 +1,5 @@
+secret_key: 'super secret key 3'
 DB_NAME: 'questions.db'
 TABLE_NAME: 'questions'
-CURRENT_HW: '0315-triangles'
-secret_key: 'super secret key 3'
+HW: ['0308-triangles', '0315-quadrilaterals']
+HW_CSV_FILE: '030823_questions.csv'

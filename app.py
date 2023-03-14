@@ -14,7 +14,7 @@ app = Flask(__name__)
 app.secret_key = hw_configs['secret_key']
 app.config['SESSION_TYPE'] = 'filesystem'
 
-DB_NAME = f"{FILE_DIR}/hw_configs['DB_NAME']"
+DB_NAME = f"{FILE_DIR}/{hw_configs['DB_NAME']}"
 TABLE_NAME = hw_configs['TABLE_NAME']
 HW_CSV_FILE = hw_configs['HW_CSV_FILE']
 ALL_HW = hw_configs['HW']
@@ -156,7 +156,7 @@ def index():
             questions = select_questions(CURRENT_USER)
             print('Tried getting questions a second time')
 
-        except sqlite3.DatabaseError:
+        except pd.errors.DatabaseError:
             create_hw()
             insert_hw(HW_CSV_FILE)
             questions = select_questions(CURRENT_USER)
