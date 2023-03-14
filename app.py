@@ -1,5 +1,6 @@
 import csv
 import sqlite3
+from datetime import datetime, timezone
 
 import pandas as pd
 import yaml
@@ -15,8 +16,18 @@ app.config['SESSION_TYPE'] = 'filesystem'
 
 DB_NAME = f"{FILE_DIR}/hw_configs['DB_NAME']"
 TABLE_NAME = hw_configs['TABLE_NAME']
-CURRENT_HW = hw_configs['CURRENT_HW']
 HW_CSV_FILE = hw_configs['HW_CSV_FILE']
+ALL_HW = hw_configs['HW']
+
+current_datetime = datetime.now(timezone.utc)
+CURRENT_HW = ALL_HW[0]
+for hw in ALL_HW[1:]:
+    HW_MONTH, HW_DATE = int(hw.split('-')[0][:2]), int(hw.split('-')[0][2:])
+    print(current_datetime, datetime(2023, HW_MONTH, HW_DATE, 22, 0, 0, tzinfo=timezone.utc))
+    if current_datetime > datetime(
+        2023, HW_MONTH, HW_DATE, 22, 0, 0, tzinfo=timezone.utc
+    ):  # 6 pm after Daylights Savings
+        CURRENT_HW = hw
 
 
 def create_hw():
