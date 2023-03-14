@@ -49,9 +49,9 @@ def create_hw():
     conn.close()
 
 
-def insert_hw(HW_CSV_FILE):
+def insert_hw(hw_csv_file):
     conn = sqlite3.connect(DB_NAME)
-    file = open(f'{FILE_DIR}/{HW_CSV_FILE}')
+    file = open(f'{FILE_DIR}/{hw_csv_file}')
 
     # SQL query to insert CSV data into the table
     contents = csv.reader(file)
@@ -71,6 +71,20 @@ def insert_hw(HW_CSV_FILE):
     print(test)
 
     conn.close()
+
+
+def select_questions(current_user):
+    conn = sqlite3.connect(DB_NAME)
+    select_query = f"""
+                    SELECT * FROM {TABLE_NAME}
+                    WHERE lower(homework_name) = lower('{CURRENT_HW}')
+                    AND lower(student_name) = lower('{current_user}')
+                    ORDER BY question_number
+                    """
+    questions = pd.read_sql_query(select_query, conn)
+    conn.close()
+
+    return questions
 
 
 def clean_answer(ans, answer_type):
@@ -113,17 +127,29 @@ def index():
         # Else, proceed to get questions for current user and homework assignment
         CURRENT_USER = session['user']
 
-        conn = sqlite3.connect(DB_NAME)
+        try:
+            questions = select_questions(CURRENT_USER)
 
-        select_questions = f"""
-                    SELECT * FROM {TABLE_NAME}
-                    WHERE lower(homework_name) = lower('{CURRENT_HW}')
-                    AND lower(student_name) = lower('{CURRENT_USER}')
-                    ORDER BY question_number
-                    """
-        questions = pd.read_sql_query(select_questions, conn)
+            if len(questions) > 0 or CURRENT_USER == 'Amy':
+                print('success getting questions')
+            else:
+                raise ValueError("There are not any questions available")
 
-        conn.close()
+        except ValueError:
+            try:
+                insert_hw(HW_CSV_FILE)
+                print('Success inserting new questions')
+            except sqlite3.DatabaseError:
+                pass
+
+            questions = select_questions(CURRENT_USER)
+            print('Tried getting questions a second time')
+
+        except sqlite3.DatabaseError:
+            create_hw()
+            insert_hw(HW_CSV_FILE)
+            questions = select_questions(CURRENT_USER)
+            print('Reset database and tried getting questions a second time')
 
         # Dictionary version of questions
         questions['question_number'] = questions['question_number'].astype(str)  # needs to be str for form
