@@ -88,6 +88,18 @@ def select_questions(current_user, current_hw):
     return questions
 
 
+def delete_questions(current_user, current_hw):
+    conn = sqlite3.connect(DB_NAME)
+    delete_query = f"""
+                    DELETE FROM {TABLE_NAME}
+                    WHERE lower(homework_name) = lower('{current_hw}')
+                    AND lower(student_name) = lower('{current_user}')
+                    """
+    conn.execute(delete_query)
+    conn.commit()
+    conn.close()
+
+
 def clean_answer(ans, answer_type):
     ans = ans.strip().lower()
     try:
