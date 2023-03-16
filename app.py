@@ -19,16 +19,6 @@ TABLE_NAME = hw_configs['TABLE_NAME']
 HW_CSV_FILE = hw_configs['HW_CSV_FILE']
 ALL_HW = hw_configs['HW']
 
-current_datetime = datetime.now(timezone.utc)
-CURRENT_HW = ALL_HW[0]
-for hw in ALL_HW[1:]:
-    HW_MONTH, HW_DATE = int(hw.split('-')[0][:2]), int(hw.split('-')[0][2:])
-    print(current_datetime, datetime(2023, HW_MONTH, HW_DATE, 22, 0, 0, tzinfo=timezone.utc))
-    if current_datetime > datetime(
-        2023, HW_MONTH, HW_DATE, 22, 0, 0, tzinfo=timezone.utc
-    ):  # 6 pm after Daylights Savings
-        CURRENT_HW = hw
-
 
 def create_hw():
     conn = sqlite3.connect(DB_NAME)
@@ -84,11 +74,11 @@ def insert_hw(hw_csv_file):
     conn.close()
 
 
-def select_questions(current_user):
+def select_questions(current_user, current_hw):
     conn = sqlite3.connect(DB_NAME)
     select_query = f"""
                     SELECT * FROM {TABLE_NAME}
-                    WHERE lower(homework_name) = lower('{CURRENT_HW}')
+                    WHERE lower(homework_name) = lower('{current_hw}')
                     AND lower(student_name) = lower('{current_user}')
                     ORDER BY question_number
                     """
@@ -116,6 +106,16 @@ def clean_answer(ans, answer_type):
 @app.route('/', methods=['GET', 'POST'])
 @app.route('/index', methods=['GET', 'POST'])
 def index():
+    current_datetime = datetime.now(timezone.utc)
+    CURRENT_HW = ALL_HW[0]
+    for hw in ALL_HW[1:]:
+        HW_MONTH, HW_DATE = int(hw.split('-')[0][:2]), int(hw.split('-')[0][2:])
+        print(current_datetime, datetime(2023, HW_MONTH, HW_DATE, 22, 0, 0, tzinfo=timezone.utc))
+        if current_datetime > datetime(
+            2023, HW_MONTH, HW_DATE, 0, 0, 0, tzinfo=timezone.utc
+        ):  # 6 pm after Daylights Savings
+            CURRENT_HW = hw
+
     if request.method == 'POST':
         print(dict(request.form))
 
@@ -139,7 +139,7 @@ def index():
         CURRENT_USER = session['user']
 
         try:
-            questions = select_questions(CURRENT_USER)
+            questions = select_questions(CURRENT_USER, CURRENT_HW)
 
             if len(questions) > 0 or CURRENT_USER == 'Amy':
                 print('success getting questions')
