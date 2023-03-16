@@ -118,6 +118,7 @@ def clean_answer(ans, answer_type):
 @app.route('/', methods=['GET', 'POST'])
 @app.route('/index', methods=['GET', 'POST'])
 def index():
+    # Update to most recent homework assignment
     current_datetime = datetime.now(timezone.utc)
     CURRENT_HW = ALL_HW[0]
     for hw in ALL_HW[1:]:
@@ -165,13 +166,13 @@ def index():
             except sqlite3.DatabaseError:
                 pass
 
-            questions = select_questions(CURRENT_USER)
+            questions = select_questions(CURRENT_USER, CURRENT_HW)
             print('Tried getting questions a second time')
 
         except pd.errors.DatabaseError:
             create_hw()
             insert_hw(HW_CSV_FILE)
-            questions = select_questions(CURRENT_USER)
+            questions = select_questions(CURRENT_USER, CURRENT_HW)
             print('Reset database and tried getting questions a second time')
 
         # Dictionary version of questions
