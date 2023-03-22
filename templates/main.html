@@ -35,7 +35,7 @@
         <br>
 
         {% for field in form %}
-            <div> {{ field.label }}. {{ qbank.get(field.label.field_id).question_text }} </div>
+            <div> {{ field.label }}. {{ qbank.get(field.label.field_id).question_text|safe }} </div>
 
             {% if 'fig' in qbank.get(field.label.field_id).question_image_url %}
                 <div>
