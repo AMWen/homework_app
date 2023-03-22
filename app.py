@@ -88,13 +88,14 @@ def select_questions(current_user, current_hw):
     return questions
 
 
-def delete_questions(current_user, current_hw):
+def delete_questions(current_hw, current_user=None):
     conn = sqlite3.connect(DB_NAME)
     delete_query = f"""
                     DELETE FROM {TABLE_NAME}
                     WHERE lower(homework_name) = lower('{current_hw}')
-                    AND lower(student_name) = lower('{current_user}')
                     """
+    if current_user:
+        delete_query += f"AND lower(student_name) = lower('{current_user}')"
     conn.execute(delete_query)
     conn.commit()
     conn.close()
@@ -109,6 +110,8 @@ def clean_answer(ans, answer_type):
             ans = round(ans, int(answer_type.split('round')[1]))
         elif answer_type == 'str':
             ans = ans.replace('\"', "")
+        elif answer_type == 'str_cap':
+            ans = ans.replace('\"', "").upper()
     except ValueError:
         pass
 
