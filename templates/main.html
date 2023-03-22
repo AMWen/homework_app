@@ -55,10 +55,10 @@
 
             <div>Attempts: {{ qbank.get(field.label.field_id).num_attempts }}</div>
             {% if (qbank.get(field.label.field_id).num_attempts > 0) and (qbank.get(field.label.field_id).hint_1 != '') and ((qbank.get(field.label.field_id).is_correct == 0) or (qbank.get(field.label.field_id).num_attempts != 1 and qbank.get(field.label.field_id).is_correct == 1)) %}
-                <div>Hint: {{ qbank.get(field.label.field_id).hint_1 }}</div>
+                <div>Hint: {{ qbank.get(field.label.field_id).hint_1|safe }}</div>
             {% endif %}
             {% if qbank.get(field.label.field_id).num_attempts > 1 and qbank.get(field.label.field_id).hint_2 != '' and qbank.get(field.label.field_id).is_correct == 0 %}
-                <div>Hint 2: {{ qbank.get(field.label.field_id).hint_2 }}</div>
+                <div>Hint 2: {{ qbank.get(field.label.field_id).hint_2|safe }}</div>
             {% endif %}
             <br>
         {% endfor %}
