@@ -26,6 +26,8 @@
     {% else %}
         <div> Current user: {{current_user}} &emsp; </div>
 
+        <div> Answered: {{current_correct}} / {{total_qns}} </div>
+
         {% if current_user == "Amy" %}
 
         <div><input type="submit" name="reset_button" value="Change" size="36"/></div>
@@ -35,7 +37,11 @@
         <br>
 
         {% for field in form %}
-            <div> {{ field.label }}. {{ qbank.get(field.label.field_id).question_text|safe }} </div>
+            {% if field.label.field_id == '0' %}
+                <div> {{ qbank.get(field.label.field_id).question_text|safe }} </div>
+            {% else %}
+                <div> {{ field.label }}. {{ qbank.get(field.label.field_id).question_text|safe }} </div>
+            {% endif %}
 
             {% if 'fig' in qbank.get(field.label.field_id).question_image_url %}
                 <div>
@@ -44,7 +50,9 @@
             {% endif %}
 
             <div>
-            {% if qbank.get(field.label.field_id).num_attempts == 0 %}
+            {% if field.label.field_id == '0' or qbank.get(field.label.field_id).answer_type == 'none' %}
+                <br>
+            {% elif qbank.get(field.label.field_id).num_attempts == 0 %}
                 {{ field }}
             {% elif qbank.get(field.label.field_id).is_correct == 1 %}
                 {{ field }} <img src="static/check.png", width="16px">
@@ -53,7 +61,9 @@
             {% endif %}
             </div>
 
-            <div>Attempts: {{ qbank.get(field.label.field_id).num_attempts }}</div>
+            {% if qbank.get(field.label.field_id).answer_type != 'none' %}
+                <div>Attempts: {{ qbank.get(field.label.field_id).num_attempts }}</div>
+            {% endif %}
             {% if (qbank.get(field.label.field_id).num_attempts > 0) and (qbank.get(field.label.field_id).hint_1 != '') and ((qbank.get(field.label.field_id).is_correct == 0) or (qbank.get(field.label.field_id).num_attempts != 1 and qbank.get(field.label.field_id).is_correct == 1)) %}
                 <div>Hint: {{ qbank.get(field.label.field_id).hint_1|safe }}</div>
             {% endif %}

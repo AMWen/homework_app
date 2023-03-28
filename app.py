@@ -138,7 +138,9 @@ def index():
     if not session.get('user'):
         # Ask user to select name since none selected yet
         if request.method != 'POST':
-            return render_template("main.html", form=None, qbank=None, current_user="")
+            return render_template(
+                "main.html", form=None, qbank=None, current_user="", current_correct=None, total_qns=None
+            )
 
         else:
             # Set user to selected user
@@ -181,6 +183,11 @@ def index():
         # Dictionary version of questions
         questions['question_number'] = questions['question_number'].astype(str)  # needs to be str for form
         qbank = questions.set_index('question_number').T.to_dict()
+
+        CURRENT_CORRECT = questions.is_correct.sum()
+        TOTAL_QNS = questions.query(
+            'answer_type != "none"'
+        ).question_number.count()  # ignore questions that can't be submitted
 
         print(qbank)
 
@@ -260,7 +267,14 @@ def index():
 
             return redirect('/')
 
-    return render_template("main.html", form=form, qbank=qbank, current_user=CURRENT_USER)
+    return render_template(
+        "main.html",
+        form=form,
+        qbank=qbank,
+        current_user=CURRENT_USER,
+        current_correct=CURRENT_CORRECT,
+        total_qns=TOTAL_QNS,
+    )
 
 
 if __name__ == '__main__':
