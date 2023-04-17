@@ -105,9 +105,9 @@ def clean_answer(ans, answer_type):
     ans = ans.strip().lower()
     try:
         if answer_type == 'int':
-            ans = int(ans.replace(r'\%', "").replace(r'\$', ""))
+            ans = int(ans.replace('%', "").replace('$', ""))
         elif 'round' in answer_type:
-            ans = round(ans, int(answer_type.split('round')[1]))
+            ans = round(float(ans), int(answer_type.split('round')[1]))
         elif answer_type == 'str':
             ans = ans.replace('\"', "")
         elif answer_type == 'str_cap':
