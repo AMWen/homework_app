@@ -1,6 +1,6 @@
 import csv
 import sqlite3
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 
 import pandas as pd
 import yaml
@@ -105,7 +105,7 @@ def clean_answer(ans, answer_type):
     ans = ans.strip().lower()
     try:
         if answer_type == 'int':
-            ans = int(ans)
+            ans = int(ans.replace(r'\%', "").replace(r'\$', ""))
         elif 'round' in answer_type:
             ans = round(ans, int(answer_type.split('round')[1]))
         elif answer_type == 'str':
@@ -127,9 +127,9 @@ def index():
     for hw in ALL_HW[1:]:
         HW_MONTH, HW_DATE = int(hw.split('-')[0][:2]), int(hw.split('-')[0][2:])
         print(current_datetime, datetime(2023, HW_MONTH, HW_DATE, 22, 0, 0, tzinfo=timezone.utc))
-        if current_datetime > datetime(
-            2023, HW_MONTH, HW_DATE, 0, 0, 0, tzinfo=timezone.utc
-        ):  # 6 pm after Daylights Savings
+        if current_datetime > datetime(2023, HW_MONTH, HW_DATE, 0, 0, 0, tzinfo=timezone.utc) - timedelta(
+            1
+        ):  # for testing
             CURRENT_HW = hw
 
     if request.method == 'POST':
