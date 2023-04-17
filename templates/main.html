@@ -53,11 +53,11 @@
             {% if field.label.field_id == '0' or qbank.get(field.label.field_id).answer_type == 'none' %}
                 <br>
             {% elif qbank.get(field.label.field_id).num_attempts == 0 %}
-                {{ field }}
+                {{ field(autocomplete="off") }}
             {% elif qbank.get(field.label.field_id).is_correct == 1 %}
-                {{ field }} <img src="static/check.png", width="16px">
+                {{ field(autocomplete="off") }} <img src="static/check.png", width="16px">
             {% else %}
-                {{ field }} <img src="static/x.png", width="16px">
+                {{ field(autocomplete="off") }} <img src="static/x.png", width="16px">
             {% endif %}
             </div>
 
